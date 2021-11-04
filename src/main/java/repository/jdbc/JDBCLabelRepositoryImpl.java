@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class JDBCTagRepositoryImpl implements TagRepository {
+public class JDBCLabelRepositoryImpl implements TagRepository {
     private final Connection connection = DBConnection.getConnection();
 
     @Override

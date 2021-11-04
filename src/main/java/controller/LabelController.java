@@ -1,13 +1,13 @@
 package controller;
 
 import model.Label;
-import repository.jdbc.JDBCTagRepositoryImpl;
+import repository.jdbc.JDBCLabelRepositoryImpl;
 
 import java.util.List;
 import java.util.Objects;
 
 public class LabelController {
-    private final JDBCTagRepositoryImpl repository = new JDBCTagRepositoryImpl();
+    private final JDBCLabelRepositoryImpl repository = new JDBCLabelRepositoryImpl();
 
     public List<Label> getAllLabels(){
         return repository.getAll();
