@@ -39,17 +39,16 @@ public class JDBCPostRepositoryImpl implements PostRepository {
     @Override
     public Post getById(Integer id) {
 
-        try(PreparedStatement statement = DBConnection.geStatement(Requests.GET_POST_BY_ID.toString())) {
+        try(PreparedStatement statement = DBConnection.geStatement
+                (Requests.GET_POST_BY_ID.toString()))
+        {
             statement.setInt(1, id);
 
             ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
-            Post post = getPostFromResultSet(resultSet);
 
-            if(Objects.isNull(post)){
-                return null;
+            if(resultSet.next()){
+                return getPostFromResultSet(resultSet);
             }
-            return post;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -118,7 +117,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
                 labelsStatement.execute();
             }
 
-            return post;
+            return getById(post.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -163,7 +162,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
 
         try(PreparedStatement tagsStatement =
                     DBConnection.geStatement(
-                            "select label_id from posts_labels where post_id = ?"))
+                            Requests.GET_ALL_POST_LABELS.toString()))
         {
             tagsStatement.setInt(1, id);
             ResultSet tagsResult = tagsStatement.executeQuery();

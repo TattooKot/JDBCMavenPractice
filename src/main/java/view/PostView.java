@@ -56,11 +56,6 @@ public class PostView {
 
         int option = idScanner();
 
-        if(option == -1){
-            System.out.println("Wrong option, try again");
-            return;
-        }
-
         switch (option){
             case 1 ->{
                 System.out.println("Write new content:");

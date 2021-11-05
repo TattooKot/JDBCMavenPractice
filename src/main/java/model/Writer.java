@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Writer {
     private int id;
     private String firstName;
-    private String secondName;
+    private String lastName;
     private List<Post> posts = new ArrayList<>();
 
     @Override
@@ -17,7 +17,7 @@ public class Writer {
             postIds.append(post.getId()).append("\n");
         }
         return  "id:" + id + "\n" +
-                "name: " + firstName + " " + secondName + "\n" +
+                "name: " + firstName + " " + lastName + "\n" +
                 "posts id:\n" + postIds;
     }
 
@@ -26,12 +26,12 @@ public class Writer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Writer writer = (Writer) o;
-        return id == writer.id && firstName.equals(writer.firstName) && secondName.equals(writer.secondName) && posts.equals(writer.posts);
+        return id == writer.id && firstName.equals(writer.firstName) && lastName.equals(writer.lastName) && posts.equals(writer.posts);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, secondName, posts);
+        return Objects.hash(id, firstName, lastName, posts);
     }
 
     public int getId() {
@@ -50,12 +50,12 @@ public class Writer {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public List<Post> getPosts() {

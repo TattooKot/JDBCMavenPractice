@@ -1,5 +1,6 @@
 import view.LabelView;
 import view.PostView;
+import view.WriterView;
 
 import java.util.Scanner;
 
@@ -7,6 +8,7 @@ public class Main {
     public static void main(String[] args) {
         LabelView labelView = new LabelView();
         PostView postView = new PostView();
+        WriterView writerView = new WriterView();
 
         System.out.println("Enter command:");
         Scanner scanner = new Scanner(System.in);
@@ -26,6 +28,12 @@ public class Main {
                 case "get post by id" -> postView.getPostById();
                 case "update post" -> postView.updatePost();
                 case "delete post" -> postView.deletePostById();
+                //writers command
+                case "create writer" -> writerView.createWriter();
+                case "get all writers" -> writerView.getAllWriters();
+                case "get writer by id" -> writerView.getWriterById();
+                case "update writer" -> writerView.updateWriter();
+                case "delete writer" -> writerView.deleteWriter();
             }
             line = scanner.nextLine();
         }

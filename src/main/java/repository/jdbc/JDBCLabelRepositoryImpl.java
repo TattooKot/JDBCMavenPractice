@@ -41,7 +41,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
             if(rs.next()) {
                 String name = rs.getString("name");
                 return new Label(label_id, name);
-            } else return null;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
