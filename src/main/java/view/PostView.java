@@ -45,7 +45,7 @@ public class PostView {
         while((id = idScanner()) != -1){
             Label label = labelController.getLabelById(id);
             if(Objects.isNull(label)){
-                System.out.println("Something goes wrong with label...");
+                System.out.println("Label does not exist...");
                 continue;
             }
             labels.add(label);
@@ -55,7 +55,7 @@ public class PostView {
         post.setContent(content.toString());
         post.setCreated(new Date());
         post.setUpdated(new Date());
-        post.setStatus(PostStatus.ACTIVE);
+        post.setStatus(PostStatus.UNDER_REVIEW);
         post.setLabels(labels);
 
         System.out.println("Post created:\n" + controller.createPost(post));

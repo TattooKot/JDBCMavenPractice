@@ -5,6 +5,7 @@ import model.Post;
 import model.PostStatus;
 import repository.PostRepository;
 import service.DBConnection;
+import service.Requests;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,25 +13,22 @@ import java.util.List;
 import java.util.Objects;
 
 public class JDBCPostRepositoryImpl implements PostRepository {
-    private final Connection connection = DBConnection.getConnection();
     private final JDBCLabelRepositoryImpl labelRepository = new JDBCLabelRepositoryImpl();
 
     @Override
     public List<Post> getAll() {
-        checkConnection();
-        assert connection != null;
 
         List<Post> posts = new ArrayList<>();
-        try(Statement postStatement = connection.createStatement()){
-            ResultSet postResult = postStatement.executeQuery("select * from posts");
-
+        try(PreparedStatement postStatement = DBConnection.geStatement(
+                Requests.GET_ALL_POSTS.toString()))
+        {
+            ResultSet postResult = postStatement.executeQuery();
             while(postResult.next()){
                 Post post = getPostFromResultSet(postResult);
 
                 if(Objects.isNull(post)){
-                    return null;
+                    throw new RuntimeException();
                 }
-
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -41,10 +39,8 @@ public class JDBCPostRepositoryImpl implements PostRepository {
 
     @Override
     public Post getById(Integer postId) {
-        checkConnection();
-        assert connection != null;
 
-        try(PreparedStatement statement = connection.prepareStatement("select * from posts where id = ?")) {
+        try(PreparedStatement statement = DBConnection.geStatement(Requests.GET_POST_BY_ID.toString())) {
             statement.setInt(1, postId);
 
             ResultSet resultSet = statement.executeQuery();
@@ -63,27 +59,25 @@ public class JDBCPostRepositoryImpl implements PostRepository {
 
     @Override
     public Post create(Post post) {
-        checkConnection();
-        assert connection != null;
 
-        try(PreparedStatement statement = connection.prepareStatement(
-                "insert into posts(content, created, updated, postStatus) VALUES (?,?,?,?)");
-            PreparedStatement getIdStatement = connection.prepareStatement(
-                "SELECT * FROM posts ORDER BY ID DESC LIMIT 1");
-            PreparedStatement labelsStatement = connection.prepareStatement(
-                    "insert into posts_labels values(?, ?)"))
+        try(PreparedStatement createPostStatement = DBConnection.geStatement(
+                Requests.CREATE_NEW_POST.toString());
+            PreparedStatement lastOneStatement = DBConnection.geStatement(
+                    Requests.GET_LAST_POST.toString());
+            PreparedStatement labelsStatement = DBConnection.geStatement(
+                    Requests.ADD_POST_LABEL.toString()))
         {
 
-            statement.setString(1, post.getContent());
-            statement.setDate(2, new java.sql.Date(post.getCreated().getTime()));
-            statement.setDate(3, new java.sql.Date(post.getUpdated().getTime()));
-            statement.setString(4, post.getStatus().name());
-            statement.execute();
+            createPostStatement.setString(1, post.getContent());
+            createPostStatement.setDate(2, new java.sql.Date(post.getCreated().getTime()));
+            createPostStatement.setDate(3, new java.sql.Date(post.getUpdated().getTime()));
+            createPostStatement.setString(4, post.getStatus().name());
+            createPostStatement.execute();
 
-            ResultSet idRS = getIdStatement.executeQuery();
-            idRS.next();
+            ResultSet lastPostRS = lastOneStatement.executeQuery();
+            lastPostRS.next();
 
-            int postId = idRS.getInt("id");
+            int postId = lastPostRS.getInt("id");
 
             for(Label label : post.getLabels()){
                 labelsStatement.setInt(1, postId);
@@ -91,14 +85,11 @@ public class JDBCPostRepositoryImpl implements PostRepository {
                 labelsStatement.execute();
             }
 
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM posts ORDER BY ID DESC LIMIT 1");
-            resultSet.next();
-
-            return getPostFromResultSet(resultSet);
+            return getPostFromResultSet(lastPostRS);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException();
     }
 
     @Override
@@ -111,19 +102,13 @@ public class JDBCPostRepositoryImpl implements PostRepository {
 
     }
 
-    private void checkConnection() {
-        if (Objects.isNull(connection)) {
-            throw new RuntimeException("Something wrong with db connection...");
-        }
-    }
-
     private List<Label> getLabelList(int id){
-        checkConnection();
-        assert connection != null;
-
         List<Label> labels = new ArrayList<>();
 
-        try(PreparedStatement tagsStatement = connection.prepareStatement("select label_id from posts_labels where post_id = ?")) {
+        try(PreparedStatement tagsStatement =
+                    DBConnection.geStatement(
+                            "select label_id from posts_labels where post_id = ?"))
+        {
             tagsStatement.setInt(1, id);
             ResultSet tagsResult = tagsStatement.executeQuery();
 
