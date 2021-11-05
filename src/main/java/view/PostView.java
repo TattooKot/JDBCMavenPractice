@@ -86,9 +86,7 @@ public class PostView {
                 return;
             }
         }
-
         System.out.println("Post updated:\n" + controller.updatePost(post));
-
     }
 
     public void deletePostById(){
@@ -146,7 +144,7 @@ public class PostView {
     }
 
     private List<Label> getLabelListFromConsole(){
-        System.out.println("Enter tags id: ");
+        System.out.println("Enter labels id: ");
         System.out.println("(Enter /q when you finished)");
         List<Label> labels = new ArrayList<>();
         int id;

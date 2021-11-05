@@ -14,11 +14,13 @@ public class Main {
 
         while (!line.equals("q")){
             switch (line) {
+                //labels command
                 case "create label" -> labelView.createLabel();
                 case "get all labels" -> labelView.getAllLabels();
                 case "get label by id" -> labelView.getLabelById();
                 case "update label" -> labelView.updateLabel();
                 case "delete label" -> labelView.deleteLabel();
+                //posts command
                 case "create post" -> postView.createPost();
                 case "get all posts" -> postView.getAllPosts();
                 case "get post by id" -> postView.getPostById();
