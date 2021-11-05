@@ -71,12 +71,8 @@ public class LabelView {
             return;
         }
 
-        if(controller.deleteLabelById(label.getId())){
-            System.out.println("Label deleted");
-        } else {
-            System.out.println("Label does not deleted");
-        }
-
+        controller.deleteLabelById(label.getId());
+        System.out.println("Label deleted");
     }
 
     private Label labelIdScanner(){

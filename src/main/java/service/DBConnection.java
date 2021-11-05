@@ -13,11 +13,10 @@ public class DBConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return  null;
+        throw new RuntimeException();
     }
 
     public static PreparedStatement geStatement(String sql){
-        assert getConnection() != null;
         try {
             return getConnection().prepareStatement(sql);
         } catch (SQLException e) {

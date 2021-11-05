@@ -19,4 +19,12 @@ public class PostController {
     public Post createPost(Post post){
         return repository.create(post);
     }
+
+    public Post updatePost(Post post){
+        return repository.update(post);
+    }
+
+    public void deletePostById(int id){
+        repository.deleteById(id);
+    }
 }

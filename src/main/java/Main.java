@@ -22,6 +22,8 @@ public class Main {
                 case "create post" -> postView.createPost();
                 case "get all posts" -> postView.getAllPosts();
                 case "get post by id" -> postView.getPostById();
+                case "update post" -> postView.updatePost();
+                case "delete post" -> postView.deletePostById();
             }
             line = scanner.nextLine();
         }

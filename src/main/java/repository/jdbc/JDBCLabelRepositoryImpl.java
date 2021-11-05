@@ -102,7 +102,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
 
         //remove from post_labels
         try(PreparedStatement statement = DBConnection.geStatement(
-                Requests.REMOVE_LABEL_FROM_POSTS.toString()))
+                Requests.REMOVE_LABEL_FROM_POST_LABELS.toString()))
         {
             statement.setInt(1, id);
             statement.execute();
