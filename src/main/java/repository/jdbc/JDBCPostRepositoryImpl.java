@@ -18,7 +18,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
     public List<Post> getAll() {
 
         List<Post> posts = new ArrayList<>();
-        try(PreparedStatement postStatement = DBConnection.geStatement(
+        try(PreparedStatement postStatement = DBConnection.getStatement(
                 Requests.GET_ALL_POSTS.toString()))
         {
             ResultSet postResult = postStatement.executeQuery();
@@ -39,7 +39,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
     @Override
     public Post getById(Integer id) {
 
-        try(PreparedStatement statement = DBConnection.geStatement
+        try(PreparedStatement statement = DBConnection.getStatement
                 (Requests.GET_POST_BY_ID.toString()))
         {
             statement.setInt(1, id);
@@ -58,11 +58,11 @@ public class JDBCPostRepositoryImpl implements PostRepository {
     @Override
     public Post create(Post post) {
 
-        try(PreparedStatement createPostStatement = DBConnection.geStatement(
+        try(PreparedStatement createPostStatement = DBConnection.getStatement(
                 Requests.CREATE_NEW_POST.toString());
-            PreparedStatement lastOneStatement = DBConnection.geStatement(
+            PreparedStatement lastOneStatement = DBConnection.getStatement(
                     Requests.GET_LAST_POST.toString());
-            PreparedStatement labelsStatement = DBConnection.geStatement(
+            PreparedStatement labelsStatement = DBConnection.getStatement(
                     Requests.ADD_POST_LABEL.toString()))
         {
 
@@ -92,11 +92,11 @@ public class JDBCPostRepositoryImpl implements PostRepository {
 
     @Override
     public Post update(Post post) {
-        try(PreparedStatement updateStatement = DBConnection.geStatement(
+        try(PreparedStatement updateStatement = DBConnection.getStatement(
                 Requests.UPDATE_POST_BY_ID.toString());
-            PreparedStatement deletePostLabelsStatement = DBConnection.geStatement(
+            PreparedStatement deletePostLabelsStatement = DBConnection.getStatement(
                     Requests.REMOVE_POST_LABELS.toString());
-            PreparedStatement labelsStatement = DBConnection.geStatement(
+            PreparedStatement labelsStatement = DBConnection.getStatement(
                     Requests.ADD_POST_LABEL.toString()))
         {
             //update in posts
@@ -127,7 +127,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
     @Override
     public void deleteById(Integer id) {
         //remove from posts
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.REMOVE_POST.toString()))
         {
             statement.setInt(1, id);
@@ -137,7 +137,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
         }
 
         //remove from post_labels
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.REMOVE_POST_FROM_POST_LABELS.toString()))
         {
             statement.setInt(1, id);
@@ -147,7 +147,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
         }
 
         //remove from writers_posts
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.REMOVE_POST_FROM_WRITERS_POSTS.toString()))
         {
             statement.setInt(1, id);
@@ -161,7 +161,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
         List<Label> labels = new ArrayList<>();
 
         try(PreparedStatement tagsStatement =
-                    DBConnection.geStatement(
+                    DBConnection.getStatement(
                             Requests.GET_ALL_POST_LABELS.toString()))
         {
             tagsStatement.setInt(1, id);

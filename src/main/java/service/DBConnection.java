@@ -16,7 +16,7 @@ public class DBConnection {
         throw new RuntimeException();
     }
 
-    public static PreparedStatement geStatement(String sql){
+    public static PreparedStatement getStatement(String sql){
         try {
             return getConnection().prepareStatement(sql);
         } catch (SQLException e) {

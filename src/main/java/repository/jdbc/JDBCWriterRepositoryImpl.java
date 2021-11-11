@@ -18,7 +18,7 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public List<Writer> getAll() {
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.GET_ALL_WRITERS.toString()))
         {
             ResultSet rs = statement.executeQuery();
@@ -37,7 +37,7 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer getById(Integer id) {
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.GET_WRITER_BY_ID.toString()))
         {
             statement.setInt(1, id);
@@ -53,11 +53,11 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer create(Writer writer) {
-        try(PreparedStatement preparedStatement = DBConnection.geStatement(
+        try(PreparedStatement preparedStatement = DBConnection.getStatement(
                     Requests.CREATE_NEW_WRITER.toString());
-            PreparedStatement lastWriterStatement = DBConnection.geStatement(
+            PreparedStatement lastWriterStatement = DBConnection.getStatement(
                     Requests.GET_LAST_WRITER.toString());
-            PreparedStatement addWritersPostStatement = DBConnection.geStatement(
+            PreparedStatement addWritersPostStatement = DBConnection.getStatement(
                     Requests.ADD_WRITER_POST.toString()))
         {
             preparedStatement.setString(1, writer.getFirstName());
@@ -83,11 +83,11 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer update(Writer writer) {
-        try(PreparedStatement updateWriterStatement = DBConnection.geStatement(
+        try(PreparedStatement updateWriterStatement = DBConnection.getStatement(
                 Requests.UPDATE_WRITER.toString());
-            PreparedStatement removeWritersPostStatement = DBConnection.geStatement(
+            PreparedStatement removeWritersPostStatement = DBConnection.getStatement(
                     Requests.REMOVE_WRITER_POSTS_FROM_WRITERS_POSTS.toString());
-            PreparedStatement addWritersPostStatement = DBConnection.geStatement(
+            PreparedStatement addWritersPostStatement = DBConnection.getStatement(
                     Requests.ADD_WRITER_POST.toString()))
         {
             //update in writers
@@ -116,9 +116,9 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public void deleteById(Integer id) {
-        try(PreparedStatement deleteFromWritersStatement = DBConnection.geStatement(
+        try(PreparedStatement deleteFromWritersStatement = DBConnection.getStatement(
                 Requests.REMOVE_WRITER.toString());
-            PreparedStatement removeWritersPostStatement = DBConnection.geStatement(
+            PreparedStatement removeWritersPostStatement = DBConnection.getStatement(
                     Requests.REMOVE_WRITER_POSTS_FROM_WRITERS_POSTS.toString()))
         {
             deleteFromWritersStatement.setInt(1, id);
@@ -133,7 +133,7 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     private List<Post> getPostListById(int id){
         List<Post> posts = new ArrayList<>();
-        try(PreparedStatement postsIdStatement = DBConnection.geStatement(
+        try(PreparedStatement postsIdStatement = DBConnection.getStatement(
                 Requests.GET_ALL_WRITERS_POSTS.toString()))
         {
             postsIdStatement.setInt(1, id);

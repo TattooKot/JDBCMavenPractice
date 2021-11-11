@@ -15,7 +15,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
     @Override
     public List<Label> getAll() {
         List<Label> labels = new ArrayList<>();
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.GET_ALL_LABELS.toString()))
         {
             ResultSet rs = statement.executeQuery();
@@ -32,7 +32,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
 
     @Override
     public Label getById(Integer label_id) {
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                             Requests.GET_LABEL_BY_ID.toString())){
             statement.setInt(1, label_id);
 
@@ -51,9 +51,9 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
 
     @Override
     public Label create(Label label) {
-        try(PreparedStatement createStatement = DBConnection.geStatement(
+        try(PreparedStatement createStatement = DBConnection.getStatement(
                 Requests.CREATE_NEW_LABEL.toString());
-            PreparedStatement lastLabelStatement = DBConnection.geStatement(
+            PreparedStatement lastLabelStatement = DBConnection.getStatement(
                     Requests.GET_LAST_LABEL.toString()))
         {
             createStatement.setString(1, label.getName());
@@ -76,7 +76,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
             return null;
         }
 
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.UPDATE_LABEL.toString())) {
             statement.setString(1, label.getName());
             statement.setInt(2, label.getId());
@@ -91,7 +91,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
     @Override
     public void deleteById(Integer id) {
         //remove from labels
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.REMOVE_LABEL.toString()))
         {
             statement.setInt(1, id);
@@ -101,7 +101,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
         }
 
         //remove from post_labels
-        try(PreparedStatement statement = DBConnection.geStatement(
+        try(PreparedStatement statement = DBConnection.getStatement(
                 Requests.REMOVE_LABEL_FROM_POST_LABELS.toString()))
         {
             statement.setInt(1, id);

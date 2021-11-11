@@ -15,6 +15,9 @@ public class Label {
         this.name = name;
     }
 
+    public Label() {
+    }
+
     @Override
     public String toString() {
         return "Tag: " + id +
