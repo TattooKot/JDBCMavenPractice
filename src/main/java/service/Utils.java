@@ -7,14 +7,6 @@ public class Utils {
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
-    private Connection getConnection() {
-        try {
-            return  DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        throw new RuntimeException();
-    }
 
     public PreparedStatement getStatement(String sql){
         try {
@@ -23,5 +15,14 @@ public class Utils {
             e.printStackTrace();
         }
         throw  new RuntimeException();
+    }
+
+    private Connection getConnection() {
+        try {
+            return  DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        throw new RuntimeException();
     }
 }
