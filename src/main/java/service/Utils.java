@@ -18,7 +18,7 @@ public class Utils {
 
     public PreparedStatement getStatement(String sql){
         try {
-            return getConnection().prepareStatement(sql);
+            return getConnection().prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         } catch (SQLException e) {
             e.printStackTrace();
         }

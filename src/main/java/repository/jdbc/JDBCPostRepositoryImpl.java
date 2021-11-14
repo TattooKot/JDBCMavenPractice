@@ -13,23 +13,15 @@ import java.util.Date;
 
 public class JDBCPostRepositoryImpl implements PostRepository {
     private final Service service = new Service();
-    private final JDBCLabelRepositoryImpl labelRepository = new JDBCLabelRepositoryImpl();
 
     @Override
     public List<Post> getAll() {
-
         List<Post> posts = new ArrayList<>();
-        try(PreparedStatement postStatement = service.getStatement(
-                Requests.GET_ALL_POSTS.toString()))
-        {
-            ResultSet postResult = postStatement.executeQuery();
-            while(postResult.next()){
-                Post post = getPostFromResultSet(postResult);
-
-                if(Objects.isNull(post)){
-                    throw new RuntimeException();
-                }
-                posts.add(post);
+        try(PreparedStatement statement = service.getStatement(
+                Requests.GET_ALL_POSTS.toString())) {
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                posts.add(getPostFromResultSet(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,8 +53,6 @@ public class JDBCPostRepositoryImpl implements PostRepository {
 
         try(PreparedStatement createPostStatement = service.getStatement(
                 Requests.CREATE_NEW_POST.toString());
-            PreparedStatement lastOneStatement = service.getStatement(
-                    Requests.GET_LAST_POST.toString());
             PreparedStatement labelsStatement = service.getStatement(
                     Requests.ADD_POST_LABEL.toString()))
         {
@@ -73,10 +63,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
             createPostStatement.setString(4, post.getStatus().name());
             createPostStatement.execute();
 
-            ResultSet lastPostRS = lastOneStatement.executeQuery();
-            lastPostRS.next();
-
-            int postId = lastPostRS.getInt("id");
+            int postId = getAll().size()-1;
 
             for(Label label : post.getLabels()){
                 labelsStatement.setInt(1, postId);
@@ -84,7 +71,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
                 labelsStatement.execute();
             }
 
-            return getPostFromResultSet(lastPostRS);
+            return getAll().get(postId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -158,51 +145,28 @@ public class JDBCPostRepositoryImpl implements PostRepository {
         }
     }
 
-    private List<Label> getLabelList(int id){
+    private Post getPostFromResultSet(ResultSet rs) throws SQLException{
+        Post post = new Post();
+        int postId = rs.getInt("posts.id");
+        post.setId(postId);
+        post.setContent(rs.getString("content"));
+        post.setCreated(rs.getDate("created"));
+        post.setUpdated(rs.getDate("updated"));
+        post.setStatus(PostStatus.valueOf(rs.getString("postStatus")));
         List<Label> labels = new ArrayList<>();
 
-        try(PreparedStatement tagsStatement =
-                    service.getStatement(
-                            Requests.GET_ALL_POST_LABELS.toString()))
-        {
-            tagsStatement.setInt(1, id);
-            ResultSet tagsResult = tagsStatement.executeQuery();
-
-            while (tagsResult.next()) {
-                Label label = labelRepository.getById(tagsResult.getInt("label_id"));
-                if(Objects.isNull(label)){
-                    return null;
+        if(rs.getInt("l.id") != 0){
+            labels.add(new Label(rs.getInt("l.id"), rs.getString("name")));
+            while(rs.next()){
+                if(rs.getInt("posts.id") != postId){
+                    rs.previous();
+                    break;
+                }else{
+                    labels.add(new Label(rs.getInt("l.id"), rs.getString("name")));
                 }
-                labels.add(label);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return labels;
-    }
-
-    private Post getPostFromResultSet(ResultSet resultSet) throws SQLException {
-
-        int id = resultSet.getInt("id");
-        String content = resultSet.getString("content");
-        Date created = resultSet.getDate("created");
-        Date updated = resultSet.getDate("updated");
-        PostStatus status = PostStatus.valueOf(resultSet.getString("postStatus"));
-
-        List<Label> labels = getLabelList(id);
-
-        if(Objects.isNull(labels)){
-            return null;
-        }
-
-        Post post = new Post();
-        post.setId(id);
-        post.setContent(content);
-        post.setCreated(created);
-        post.setUpdated(updated);
-        post.setStatus(status);
         post.setLabels(labels);
-
         return post;
     }
 }
