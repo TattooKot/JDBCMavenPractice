@@ -6,13 +6,14 @@ import model.PostStatus;
 import repository.PostRepository;
 import service.Service;
 import service.Requests;
+import service.Utils;
 
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
 public class JDBCPostRepositoryImpl implements PostRepository {
-    private final Service service = new Service();
+    private final Service service = new Service(new Utils());
 
     @Override
     public List<Post> getAll() {

@@ -4,6 +4,7 @@ import model.Label;
 import repository.TagRepository;
 import service.Requests;
 import service.Service;
+import service.Utils;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class JDBCLabelRepositoryImpl implements TagRepository {
-    private final Service service = new Service();
+    private final Service service = new Service(new Utils());
 
     @Override
     public List<Label> getAll() {

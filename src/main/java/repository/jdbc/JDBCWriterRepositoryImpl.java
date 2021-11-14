@@ -5,6 +5,7 @@ import model.Writer;
 import repository.WriterRepository;
 import service.Requests;
 import service.Service;
+import service.Utils;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JDBCWriterRepositoryImpl implements WriterRepository {
-    private final Service service = new Service();
+    private final Service service = new Service(new Utils());
     private final JDBCPostRepositoryImpl postRepository = new JDBCPostRepositoryImpl();
 
     @Override
