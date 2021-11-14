@@ -29,10 +29,13 @@ public enum Requests {
     REMOVE_POST_LABELS("delete from posts_labels where post_id = ?"),
 
     //writer requests
-    GET_ALL_WRITERS("select * from writers"),
-    GET_ALL_WRITERS_POSTS("select post_id from writers_posts where writer_id = ?"),
-    GET_WRITER_BY_ID("select * from writers where id = ?"),
-    GET_LAST_WRITER("select * from writers order by id desc limit 1"),
+    GET_ALL_WRITERS("""
+            select id, firstName, lastName, post_id from writers
+            left join writers_posts wp on writers.id = wp.writer_id"""),
+    GET_WRITER_BY_ID("""
+            select id, firstName, lastName, post_id from writers
+            left join writers_posts wp on writers.id = wp.writer_id
+            where id = ?"""),
     CREATE_NEW_WRITER("insert into writers(firstName, lastName) values(?,?)"),
     ADD_WRITER_POST("insert into writers_posts values(?, ?)"),
     UPDATE_WRITER("update writers set firstName = ?, lastName = ? where id = ?"),

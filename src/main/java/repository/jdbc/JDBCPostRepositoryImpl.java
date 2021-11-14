@@ -63,7 +63,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
             createPostStatement.setString(4, post.getStatus().name());
             createPostStatement.execute();
 
-            int postId = getAll().size()-1;
+            int postId = getAll().get(getAll().size()-1).getId();
 
             for(Label label : post.getLabels()){
                 labelsStatement.setInt(1, postId);

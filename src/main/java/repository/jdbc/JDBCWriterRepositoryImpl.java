@@ -3,8 +3,8 @@ package repository.jdbc;
 import model.Post;
 import model.Writer;
 import repository.WriterRepository;
-import service.Service;
 import service.Requests;
+import service.Service;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,21 +18,20 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public List<Writer> getAll() {
-        try(PreparedStatement statement = service.getStatement(
-                Requests.GET_ALL_WRITERS.toString()))
-        {
+        List<Writer> writers = new ArrayList<>();
+
+        try(PreparedStatement statement = service.getStatement(Requests.GET_ALL_WRITERS.toString())){
             ResultSet rs = statement.executeQuery();
-            List<Writer> writers = new ArrayList<>();
 
             while(rs.next()){
                 writers.add(getWriterFromResultSet(rs));
             }
 
-            return writers;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        throw new RuntimeException();
+
+        return writers;
     }
 
     @Override
@@ -55,8 +54,6 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
     public Writer create(Writer writer) {
         try(PreparedStatement preparedStatement = service.getStatement(
                     Requests.CREATE_NEW_WRITER.toString());
-            PreparedStatement lastWriterStatement = service.getStatement(
-                    Requests.GET_LAST_WRITER.toString());
             PreparedStatement addWritersPostStatement = service.getStatement(
                     Requests.ADD_WRITER_POST.toString()))
         {
@@ -64,9 +61,8 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
             preparedStatement.setString(2, writer.getLastName());
             preparedStatement.execute();
 
-            ResultSet lastWriterRS = lastWriterStatement.executeQuery();
-            lastWriterRS.next();
-            writer.setId(lastWriterRS.getInt("id"));
+            int lastId = getAll().get(getAll().size()-1).getId();
+            writer.setId(lastId);
 
             for(Post post : writer.getPosts()){
                 addWritersPostStatement.setInt(1, writer.getId());
@@ -131,38 +127,31 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
         }
     }
 
-    private List<Post> getPostListById(int id){
-        List<Post> posts = new ArrayList<>();
-        try(PreparedStatement postsIdStatement = service.getStatement(
-                Requests.GET_ALL_WRITERS_POSTS.toString()))
-        {
-            postsIdStatement.setInt(1, id);
-            ResultSet rs = postsIdStatement.executeQuery();
+    private Writer getWriterFromResultSet(ResultSet rs) throws SQLException{
+        Writer writer = new Writer();
 
-            while(rs.next()){
-                int postId = rs.getInt("post_id");
-                Post post = postRepository.getById(postId);
-                posts.add(post);
+        int writerId = rs.getInt("id");
+        writer.setId(writerId);
+        writer.setFirstName(rs.getString("firstName"));
+        writer.setLastName(rs.getString("lastName"));
+
+        List<Post> posts = new ArrayList<>();
+
+        if(rs.getInt("post_id") != 0){
+            do{
+                if(rs.getInt("id") != writerId){
+                    rs.previous();
+                    break;
+                } else{
+                    posts.add(
+                            postRepository.getById(
+                                    rs.getInt("post_id")));
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            while(rs.next());
         }
 
-        return posts;
-    }
-
-    private Writer getWriterFromResultSet(ResultSet resultSet) throws SQLException {
-        int id = resultSet.getInt("id");
-        String firstName = resultSet.getString("firstName");
-        String lastName = resultSet.getString("lastName");
-        List<Post> posts = getPostListById(id);
-
-        Writer writer = new Writer();
-        writer.setId(id);
-        writer.setFirstName(firstName);
-        writer.setLastName(lastName);
         writer.setPosts(posts);
-
         return writer;
     }
 }
