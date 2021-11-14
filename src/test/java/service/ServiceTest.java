@@ -4,9 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.sql.PreparedStatement;
-
-import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.verify;
 
 public class ServiceTest {
     private final Utils utils = Mockito.mock(Utils.class);
@@ -18,7 +16,7 @@ public class ServiceTest {
     }
     @Test
     public void testGetStatement() {
-        PreparedStatement statement = service.getStatement(Requests.GET_ALL_LABELS.toString());
-        assertNotNull(statement);
+        service.getStatement(Requests.GET_ALL_LABELS.toString());
+        verify(utils).getStatement(Requests.GET_ALL_LABELS.toString());
     }
 }
