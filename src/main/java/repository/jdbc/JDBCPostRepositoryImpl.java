@@ -4,21 +4,23 @@ import model.Label;
 import model.Post;
 import model.PostStatus;
 import repository.PostRepository;
-import service.Service;
 import service.Requests;
 import service.Utils;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class JDBCPostRepositoryImpl implements PostRepository {
-    private final Service service = new Service(new Utils());
+    private final Utils utils = new Utils();
 
     @Override
     public List<Post> getAll() {
         List<Post> posts = new ArrayList<>();
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                 Requests.GET_ALL_POSTS.toString())) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
@@ -33,7 +35,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
     @Override
     public Post getById(Integer id) {
 
-        try(PreparedStatement statement = service.getStatement
+        try(PreparedStatement statement = utils.getStatement
                 (Requests.GET_POST_BY_ID.toString()))
         {
             statement.setInt(1, id);
@@ -52,9 +54,9 @@ public class JDBCPostRepositoryImpl implements PostRepository {
     @Override
     public Post create(Post post) {
 
-        try(PreparedStatement createPostStatement = service.getStatement(
+        try(PreparedStatement createPostStatement = utils.getStatement(
                 Requests.CREATE_NEW_POST.toString());
-            PreparedStatement labelsStatement = service.getStatement(
+            PreparedStatement labelsStatement = utils.getStatement(
                     Requests.ADD_POST_LABEL.toString()))
         {
 
@@ -81,11 +83,11 @@ public class JDBCPostRepositoryImpl implements PostRepository {
 
     @Override
     public Post update(Post post) {
-        try(PreparedStatement updateStatement = service.getStatement(
+        try(PreparedStatement updateStatement = utils.getStatement(
                 Requests.UPDATE_POST_BY_ID.toString());
-            PreparedStatement deletePostLabelsStatement = service.getStatement(
+            PreparedStatement deletePostLabelsStatement = utils.getStatement(
                     Requests.REMOVE_POST_LABELS.toString());
-            PreparedStatement labelsStatement = service.getStatement(
+            PreparedStatement labelsStatement = utils.getStatement(
                     Requests.ADD_POST_LABEL.toString()))
         {
             //update in posts
@@ -116,7 +118,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
     @Override
     public void deleteById(Integer id) {
         //remove from posts
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                 Requests.REMOVE_POST.toString()))
         {
             statement.setInt(1, id);
@@ -126,7 +128,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
         }
 
         //remove from post_labels
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                 Requests.REMOVE_POST_FROM_POST_LABELS.toString()))
         {
             statement.setInt(1, id);
@@ -136,7 +138,7 @@ public class JDBCPostRepositoryImpl implements PostRepository {
         }
 
         //remove from writers_posts
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                 Requests.REMOVE_POST_FROM_WRITERS_POSTS.toString()))
         {
             statement.setInt(1, id);

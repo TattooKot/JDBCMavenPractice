@@ -2,11 +2,12 @@ package controller;
 
 import model.Writer;
 import repository.jdbc.JDBCWriterRepositoryImpl;
+import service.WriterService;
 
 import java.util.List;
 
 public class WriterController {
-    private final JDBCWriterRepositoryImpl repository = new JDBCWriterRepositoryImpl();
+    private final WriterService repository = new WriterService(new JDBCWriterRepositoryImpl());
 
     public List<Writer> getAllWriters(){
         return repository.getAll();

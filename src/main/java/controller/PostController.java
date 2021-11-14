@@ -2,29 +2,30 @@ package controller;
 
 import model.Post;
 import repository.jdbc.JDBCPostRepositoryImpl;
+import service.PostService;
 
 import java.util.List;
 
 public class PostController {
-    private final JDBCPostRepositoryImpl repository = new JDBCPostRepositoryImpl();
+    private final PostService service = new PostService(new JDBCPostRepositoryImpl());
 
     public List<Post> getAllPosts(){
-        return repository.getAll();
+        return service.getAll();
     }
 
     public Post getPostById(int id){
-        return repository.getById(id);
+        return service.getById(id);
     }
 
     public Post createPost(Post post){
-        return repository.create(post);
+        return service.create(post);
     }
 
     public Post updatePost(Post post){
-        return repository.update(post);
+        return service.update(post);
     }
 
     public void deletePostById(int id){
-        repository.deleteById(id);
+        service.deleteById(id);
     }
 }

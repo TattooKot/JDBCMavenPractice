@@ -1,9 +1,8 @@
 package repository.jdbc;
 
 import model.Label;
-import repository.TagRepository;
+import repository.LabelRepository;
 import service.Requests;
-import service.Service;
 import service.Utils;
 
 import java.sql.PreparedStatement;
@@ -13,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class JDBCLabelRepositoryImpl implements TagRepository {
-    private final Service service = new Service(new Utils());
+public class JDBCLabelRepositoryImpl implements LabelRepository {
+    private final Utils utils = new Utils();
 
     @Override
     public List<Label> getAll() {
         List<Label> labels = new ArrayList<>();
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                 Requests.GET_ALL_LABELS.toString()))
         {
             ResultSet rs = statement.executeQuery();
@@ -36,7 +35,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
 
     @Override
     public Label getById(Integer label_id) {
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                             Requests.GET_LABEL_BY_ID.toString())){
             statement.setInt(1, label_id);
 
@@ -55,9 +54,9 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
 
     @Override
     public Label create(Label label) {
-        try(PreparedStatement createStatement = service.getStatement(
+        try(PreparedStatement createStatement = utils.getStatement(
                 Requests.CREATE_NEW_LABEL.toString());
-            PreparedStatement lastLabelStatement = service.getStatement(
+            PreparedStatement lastLabelStatement = utils.getStatement(
                     Requests.GET_LAST_LABEL.toString()))
         {
             createStatement.setString(1, label.getName());
@@ -80,7 +79,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
             return null;
         }
 
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                 Requests.UPDATE_LABEL.toString())) {
             statement.setString(1, label.getName());
             statement.setInt(2, label.getId());
@@ -95,7 +94,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
     @Override
     public void deleteById(Integer id) {
         //remove from labels
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                 Requests.REMOVE_LABEL.toString()))
         {
             statement.setInt(1, id);
@@ -105,7 +104,7 @@ public class JDBCLabelRepositoryImpl implements TagRepository {
         }
 
         //remove from post_labels
-        try(PreparedStatement statement = service.getStatement(
+        try(PreparedStatement statement = utils.getStatement(
                 Requests.REMOVE_LABEL_FROM_POST_LABELS.toString()))
         {
             statement.setInt(1, id);
