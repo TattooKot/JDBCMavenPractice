@@ -3,7 +3,7 @@ package repository.jdbc;
 import model.Post;
 import model.Writer;
 import repository.WriterRepository;
-import service.DBConnection;
+import service.Service;
 import service.Requests;
 
 import java.sql.PreparedStatement;
@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JDBCWriterRepositoryImpl implements WriterRepository {
-
+    private final Service service = new Service();
     private final JDBCPostRepositoryImpl postRepository = new JDBCPostRepositoryImpl();
 
     @Override
     public List<Writer> getAll() {
-        try(PreparedStatement statement = DBConnection.getStatement(
+        try(PreparedStatement statement = service.getStatement(
                 Requests.GET_ALL_WRITERS.toString()))
         {
             ResultSet rs = statement.executeQuery();
@@ -37,7 +37,7 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer getById(Integer id) {
-        try(PreparedStatement statement = DBConnection.getStatement(
+        try(PreparedStatement statement = service.getStatement(
                 Requests.GET_WRITER_BY_ID.toString()))
         {
             statement.setInt(1, id);
@@ -53,11 +53,11 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer create(Writer writer) {
-        try(PreparedStatement preparedStatement = DBConnection.getStatement(
+        try(PreparedStatement preparedStatement = service.getStatement(
                     Requests.CREATE_NEW_WRITER.toString());
-            PreparedStatement lastWriterStatement = DBConnection.getStatement(
+            PreparedStatement lastWriterStatement = service.getStatement(
                     Requests.GET_LAST_WRITER.toString());
-            PreparedStatement addWritersPostStatement = DBConnection.getStatement(
+            PreparedStatement addWritersPostStatement = service.getStatement(
                     Requests.ADD_WRITER_POST.toString()))
         {
             preparedStatement.setString(1, writer.getFirstName());
@@ -83,11 +83,11 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer update(Writer writer) {
-        try(PreparedStatement updateWriterStatement = DBConnection.getStatement(
+        try(PreparedStatement updateWriterStatement = service.getStatement(
                 Requests.UPDATE_WRITER.toString());
-            PreparedStatement removeWritersPostStatement = DBConnection.getStatement(
+            PreparedStatement removeWritersPostStatement = service.getStatement(
                     Requests.REMOVE_WRITER_POSTS_FROM_WRITERS_POSTS.toString());
-            PreparedStatement addWritersPostStatement = DBConnection.getStatement(
+            PreparedStatement addWritersPostStatement = service.getStatement(
                     Requests.ADD_WRITER_POST.toString()))
         {
             //update in writers
@@ -116,9 +116,9 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     @Override
     public void deleteById(Integer id) {
-        try(PreparedStatement deleteFromWritersStatement = DBConnection.getStatement(
+        try(PreparedStatement deleteFromWritersStatement = service.getStatement(
                 Requests.REMOVE_WRITER.toString());
-            PreparedStatement removeWritersPostStatement = DBConnection.getStatement(
+            PreparedStatement removeWritersPostStatement = service.getStatement(
                     Requests.REMOVE_WRITER_POSTS_FROM_WRITERS_POSTS.toString()))
         {
             deleteFromWritersStatement.setInt(1, id);
@@ -133,7 +133,7 @@ public class JDBCWriterRepositoryImpl implements WriterRepository {
 
     private List<Post> getPostListById(int id){
         List<Post> posts = new ArrayList<>();
-        try(PreparedStatement postsIdStatement = DBConnection.getStatement(
+        try(PreparedStatement postsIdStatement = service.getStatement(
                 Requests.GET_ALL_WRITERS_POSTS.toString()))
         {
             postsIdStatement.setInt(1, id);
